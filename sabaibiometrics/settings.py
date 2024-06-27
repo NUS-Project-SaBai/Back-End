@@ -82,7 +82,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "sabaibiometrics.wsgi.application"
+WSGI_APPLICATION = "sabaibiometrics.wsgi.app"
 
 REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",

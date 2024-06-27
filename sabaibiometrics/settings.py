@@ -30,12 +30,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure--^*1&+ae2anj0^hnr6a7!u#ur48w3sc-@3fa=(h+0_1560gas0"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 
 # Application definition
@@ -93,24 +93,26 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    # "default": dj_database_url.config(
-    #     default="postgres://sabai_gnfs_user:MGbRjWK9fMrnSB5PYsHvcZ9BIMReXok1@dpg-clntdu4jtl8s73ah3tug-a.singapore-postgres.render.com/sabai_gnfs",
-    #     conn_max_age=600,
-    # )
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("POSTGRES_NAME"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": os.getenv("POSTGRES_HOST"),
-        "PORT": os.getenv("POSTGRES_PORT"),
-        "TEST": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        },
+
+POSTGRES_DATABASE_URL = os.getenv("POSTGRES_DATABASE_URL")
+DATABASES = {}
+if len(POSTGRES_DATABASE_URL) != 0:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=POSTGRES_DATABASE_URL, conn_max_age=600
+        )
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": os.getenv("POSTGRES_DATABASE"),
+            "USER": os.getenv("POSTGRES_USER"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+            "HOST": os.getenv("POSTGRES_HOST"),
+            "PORT": os.getenv("POSTGRES_DB_PORT"),
+        }
+    }
 
 if "test" in sys.argv:
     DATABASES["default"] = {
